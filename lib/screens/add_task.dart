@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/constants/color.dart';
+import 'package:todo_app/constants/db_handler.dart';
+import 'package:todo_app/model/todo_model.dart';
 
 class AddTask extends StatefulWidget {
   const AddTask({super.key});
@@ -11,9 +13,9 @@ class AddTask extends StatefulWidget {
 class _AddTaskState extends State<AddTask> {
   final titleController = TextEditingController();
   final descController = TextEditingController();
-  final titleFocusNode=FocusNode();
-  final  descFocusNode=FocusNode();
-  final _formkey= GlobalKey<FormState>();
+  final titleFocusNode = FocusNode();
+  final descFocusNode = FocusNode();
+  final _formkey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +23,7 @@ class _AddTaskState extends State<AddTask> {
       resizeToAvoidBottomInset: true,
       appBar: AppBar(elevation: 0),
       body: GestureDetector(
-        onTap: (){
+        onTap: () {
           titleFocusNode.unfocus();
           descFocusNode.unfocus();
         },
@@ -57,7 +59,7 @@ class _AddTaskState extends State<AddTask> {
               SizedBox(height: 80),
               //TextField Container
               Form(
-                key:_formkey ,
+                key: _formkey,
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 30),
                   child: Column(
@@ -78,10 +80,11 @@ class _AddTaskState extends State<AddTask> {
                         padding: EdgeInsets.symmetric(horizontal: 15),
                         //title Textfield
                         child: TextFormField(
-                          validator: (value){
-                            if(value!.isEmpty){
-                              return'Please enter some text';
-                            }return null;
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Please enter some text';
+                            }
+                            return null;
                           },
                           focusNode: titleFocusNode,
                           controller: titleController,
@@ -119,10 +122,11 @@ class _AddTaskState extends State<AddTask> {
                         padding: EdgeInsets.symmetric(horizontal: 15),
                         //dec Textfield
                         child: TextFormField(
-                          validator: (value){
-                            if(value!.isEmpty){
+                          validator: (value) {
+                            if (value!.isEmpty) {
                               return 'Please enter some text';
-                            }return null;
+                            }
+                            return null;
                           },
                           focusNode: descFocusNode,
                           controller: descController,
@@ -149,23 +153,41 @@ class _AddTaskState extends State<AddTask> {
                 ),
               ),
               SizedBox(height: 50),
+
               ///Add Button
               Container(
-               width: MediaQuery.of(context).size.width,
+                width: MediaQuery.of(context).size.width,
                 padding: EdgeInsets.symmetric(horizontal: 30),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     elevation: 2,
-                    padding: EdgeInsets.symmetric(vertical: 15,),
+                    padding: EdgeInsets.symmetric(vertical: 15),
                     shadowColor: textColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadiusGeometry.circular(20),
                     ),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     if(_formkey.currentState!.validate()){
-                     Navigator.pop(context);
-                    }
+                      await DBHandler()
+                          .insert(
+                        TodoModel(
+                          title: titleController.text.toString(),
+                          description: descController.text.toString(),
+                        ),
+                      )
+                          .then((value) {
+                        print('data is inserted');
+                      });
+                      Navigator.pop(context);
+
+                    }else
+                      {
+                        print('no any text');
+                      }
+
+                    var data = await DBHandler().read();
+                    print(data.map((e) => print(e.toMap)));
                   },
                   child: Text(
                     'Add',
