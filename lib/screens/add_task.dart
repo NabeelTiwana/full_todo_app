@@ -1,3 +1,4 @@
+//addtask
 import 'package:flutter/material.dart';
 import 'package:todo_app/constants/color.dart';
 import 'package:todo_app/constants/db_handler.dart';
@@ -120,7 +121,7 @@ class _AddTaskState extends State<AddTask> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         padding: EdgeInsets.symmetric(horizontal: 15),
-                        //dec Textfield
+                        //dec Textfoield
                         child: TextFormField(
                           validator: (value) {
                             if (value!.isEmpty) {

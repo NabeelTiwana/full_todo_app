@@ -1,3 +1,4 @@
+//todomodel
 class TodoModel {
   final int? id;
   final String title;
@@ -19,12 +20,12 @@ class TodoModel {
       checkbox: map['checkbox'],
     );
   }
-  Map<String,Object?>toMap(){
-    return{
-      'id':id,
-      'title':title,
-      'description':description,
-      'check':checkbox,
+  Map<String, Object?> toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'checkbox': checkbox,
     };
   }
 }
