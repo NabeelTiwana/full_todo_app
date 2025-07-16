@@ -17,7 +17,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final searchController = TextEditingController();
   final searchFocusNode = FocusNode();
-
+  String keyword = '';
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +70,9 @@ class _HomeState extends State<Home> {
               ),
               Expanded(
                 child: FutureBuilder(
-                  future: data,
+                  future: keyword.isEmpty
+                      ? DBHandler().read()
+                      : DBHandler().searchItems(keyword),
                   builder: (context, AsyncSnapshot<List<TodoModel>> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
@@ -84,17 +86,22 @@ class _HomeState extends State<Home> {
                       print(snapshot.data!);
                       final tileData = snapshot.data!;
                       return ListView.builder(
-                        padding: EdgeInsets.symmetric(horizontal: 5,vertical: 60),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 5,
+                          vertical: 60,
+                        ),
                         itemCount: tileData.length,
                         itemBuilder: (context, index) {
-                          return TodoItem(data: tileData[index],deleteTask:deleteTask,);
+                          return TodoItem(
+                            data: tileData[index],
+                            deleteTask: deleteTask,
+                          );
                         },
                       );
                     } else {
                       return Center(child: Text('No Data'));
                     }
                   },
-
                 ),
               ),
             ],
@@ -143,7 +150,11 @@ class _HomeState extends State<Home> {
       child: TextFormField(
         controller: searchController,
         focusNode: searchFocusNode,
-        onChanged: (value) {},
+        onChanged: (value) {
+          setState(() {
+            keyword = value.toString();
+          });
+        },
         decoration: InputDecoration(
           contentPadding: EdgeInsets.all(0),
           prefixIcon: Icon(Icons.search, size: 20, color: tdyellow),
@@ -175,10 +186,9 @@ class _HomeState extends State<Home> {
       ),
     );
   }
-  deleteTask(int id)async{
-    DBHandler().delete(id);
-    setState(() {
 
-    });
+  deleteTask(int id) async {
+    DBHandler().delete(id);
+    setState(() {});
   }
 }
