@@ -52,4 +52,11 @@ class DBHandler {
     Database? db=await database;
     await db!.delete('ToDoTable',where:'id = ?',whereArgs: [id] );
  }
+
+ //upadte
+update(Map<String,dynamic>dataRow)async{
+  Database? db=await database;
+  int id=dataRow['id'];
+  await db!.update('ToDoTable', dataRow,where: 'id =?',whereArgs: [id]);
+}
 }

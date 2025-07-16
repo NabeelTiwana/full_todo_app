@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/constants/color.dart';
 import 'package:todo_app/constants/db_handler.dart';
+import 'package:todo_app/model/todo_model.dart';
 
 class TodoItem extends StatefulWidget {
   final data;
@@ -14,6 +15,9 @@ class TodoItem extends StatefulWidget {
 }
 
 class _TodoItemState extends State<TodoItem> {
+  final titleController = TextEditingController();
+  final descriptionController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -88,7 +92,7 @@ class _TodoItemState extends State<TodoItem> {
               ),
               child: IconButton(
                 onPressed: () {
-                  int id=widget.data.id;
+                  int id = widget.data.id;
                   widget.deleteTask(id);
                 },
                 icon: Icon(Icons.delete, size: 20, color: textColor),
@@ -101,6 +105,10 @@ class _TodoItemState extends State<TodoItem> {
   }
 
   void showAlertBox() {
+    String title = widget.data.title;
+    String desc = widget.data.description;
+    titleController.text = title;
+    descriptionController.text = desc;
     showDialog(
       useSafeArea: true,
       context: context,
@@ -133,6 +141,7 @@ class _TodoItemState extends State<TodoItem> {
                     ],
                   ),
                   child: TextFormField(
+                    controller: titleController,
                     style: TextStyle(color: tdyellow),
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.all(10),
@@ -163,6 +172,7 @@ class _TodoItemState extends State<TodoItem> {
                     ],
                   ),
                   child: TextFormField(
+                    controller: descriptionController,
                     maxLines: 4,
                     style: TextStyle(color: tdyellow),
                     decoration: InputDecoration(
@@ -193,7 +203,14 @@ class _TodoItemState extends State<TodoItem> {
               child: Text('Cancel', style: TextStyle(color: Colors.red)),
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: ()async {
+                Map<String, Object?>dataRow = TodoModel(
+                    title: titleController.text,
+                    description: descriptionController.text,
+                id:widget.data.id).toMap();
+               await DBHandler().update(dataRow);
+               Navigator.pop(context);
+              },
               child: Text('Save', style: TextStyle(color: Colors.black)),
             ),
           ],
